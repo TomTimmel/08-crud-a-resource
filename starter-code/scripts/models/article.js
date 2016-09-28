@@ -55,13 +55,19 @@
           // Save each article from this JSON file, so we don't need to request it next time:
           responseData.forEach(function(obj) {
             var article = new Article(obj); // This will instantiate an article instance based on each article object from our JSON.
+            webDB.execute(
+              'INSERT INTO articles (title, category, author, authorUrl, publishedOn, body) VALUES (article.title, article.category, article.author, article.authorUrl, article.publishedOn, article.body);'
+            );
             /* TODO:
                1 - 'insert' the newly-instantiated article in the DB:
                 (hint: what can we call on this article instance?). */
 
           });
           // Now get ALL the records out the DB, with their database IDs:
-          webDB.execute('', function(rows) { // TODO: select our now full table
+          webDB.execute('SELECT * FROM article ORDER BY publishedOn DES', function(rows) {
+            Article.loadAll(rows);
+            nextFunction();
+            // TODO: select our now full table
             // TODO:
             // 1 - Use Article.loadAll to generate our rows,
             // 2 - Pass control to the view by calling the next function that was passed in to Article.fetchAll
@@ -78,7 +84,7 @@
         {
           // TODO: Insert an article instance into the database:
           // NOTE: this method will be called elsewhere after we retrieve our JSON
-          'sql': '', // <----- complete our SQL command here, inside the quotes.
+          'sql': 'INSERT INTO articles (title, author, authorUrl, category, publishedOn, body) VALUES(?, ?, ?, ?, ?, ?);', // <----- complete our SQL command here, inside the quotes.
           'data': [this.title, this.author, this.authorUrl, this.category, this.publishedOn, this.body]
         }
       ]
